@@ -1,0 +1,24 @@
+{
+  "name": "panelsync",
+  "version": "1.0.0",
+  "description": "PanelSync - Smart Multi-Panel Interview Scheduling System",
+  "scripts": {
+    "start": "node server/src/server.js",
+    "build": "npm run build --prefix client",
+    "dev": "npm run dev --prefix client",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "seed": "cd server && npm run seed",
+    "test": "cd server && npm test",
+    "postinstall": "cd server && npm install && cd ../client && npm install"
+  },
+  "keywords": [
+    "interview-scheduling",
+    "multi-panel",
+    "mern",
+    "calendar-sync",
+    "saas"
+  ],
+  "author": "",
+  "license": "ISC"
+}
