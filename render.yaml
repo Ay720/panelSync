@@ -20,3 +20,4 @@ services:
         value: "true"
       - key: EMAIL_FROM
         value: "PanelSync Notifications <noreply@panelsync.io>"
+

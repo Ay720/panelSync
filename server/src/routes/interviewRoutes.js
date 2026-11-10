@@ -10,11 +10,16 @@ const {
   checkConflicts,
   getRescheduleOptions,
   rescheduleInterview,
+  downloadICS,
+  submitFeedback,
 } = require('../controllers/interviewController');
 const { protect, authorize } = require('../middleware/auth');
 const validate = require('../middleware/validate');
 
 const router = express.Router();
+
+// Public ICS download route
+router.get('/:id/ics', downloadICS);
 
 router.use(protect);
 
@@ -38,6 +43,7 @@ router.post(
 router.get('/:id', getInterviewById);
 router.put('/:id', authorize('admin', 'hr'), updateInterview);
 router.post('/:id/cancel', authorize('admin', 'hr'), cancelInterview);
+router.post('/:id/feedback', submitFeedback);
 
 // Rescheduling workflows
 router.get('/:id/conflicts', checkConflicts);

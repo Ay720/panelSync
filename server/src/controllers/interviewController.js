@@ -7,6 +7,7 @@ const CalendarSyncService = require('../services/calendarSyncService');
 const NotificationService = require('../services/notificationService');
 const ReschedulingService = require('../services/reschedulingService');
 const { logAction } = require('../utils/logger');
+const { generateICS } = require('../utils/icsGenerator');
 
 // @desc    Run Smart Scheduling Engine to find optimal common slots
 // @route   POST /api/interviews/find-slots
@@ -372,6 +373,86 @@ exports.rescheduleInterview = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Interview successfully rescheduled and participants notified!',
+      interview,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Download standard .ics iCalendar invite for an interview
+// @route   GET /api/interviews/:id/ics
+// @access  Public / Private
+exports.downloadICS = async (req, res, next) => {
+  try {
+    const interview = await Interview.findById(req.params.id)
+      .populate('candidate')
+      .populate('interviewers.interviewer');
+
+    if (!interview) return res.status(404).send('Interview not found');
+
+    const attendees = [
+      { name: interview.candidate?.name || 'Candidate', email: interview.candidate?.email || 'candidate@example.com' },
+      ...interview.interviewers.map((p) => ({
+        name: p.interviewer?.name || 'Interviewer',
+        email: p.interviewer?.email || 'interviewer@panelsync.io',
+      })),
+    ];
+
+    const icsContent = generateICS({
+      uid: `interview-${interview._id}@panelsync.io`,
+      title: `${interview.title} - ${interview.candidate?.name || 'Candidate'}`,
+      description: `Interview for ${interview.candidate?.name}\nRole: ${interview.jobRole}\nVirtual Room: ${interview.meetingLink}`,
+      startTime: interview.scheduledStartTime,
+      endTime: interview.scheduledEndTime,
+      location: interview.meetingLink,
+      attendees,
+    });
+
+    res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="interview-${interview._id}.ics"`);
+    res.send(icsContent);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Submit evaluation feedback and complete interview
+// @route   POST /api/interviews/:id/feedback
+// @access  Private
+exports.submitFeedback = async (req, res, next) => {
+  try {
+    const { feedbackNotes, scores, recommendation } = req.body;
+    const interview = await Interview.findById(req.params.id)
+      .populate('candidate')
+      .populate('interviewers.interviewer');
+
+    if (!interview) return res.status(404).json({ success: false, message: 'Interview not found' });
+
+    interview.status = 'completed';
+    interview.feedbackNotes = `[${recommendation || 'Evaluated'}] ${feedbackNotes || ''} (Scores: ${JSON.stringify(scores || {})})`;
+    await interview.save();
+
+    // Update candidate status
+    if (interview.candidate) {
+      const candidate = await Candidate.findById(interview.candidate._id);
+      if (candidate) {
+        candidate.status = 'interview_completed';
+        await candidate.save();
+      }
+    }
+
+    await logAction({
+      action: 'INTERVIEW_COMPLETED',
+      performedBy: req.user._id,
+      targetEntity: 'Interview',
+      targetId: interview._id.toString(),
+      details: { recommendation, scores },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Evaluation submitted and interview marked completed!',
       interview,
     });
   } catch (err) {
