@@ -7,6 +7,13 @@ module.exports = async (req, res) => {
   } catch (err) {
     console.error('Database connection error in serverless handler:', err);
   }
+
+  // Ensure request URL maintains the /api prefix expected by Express routers
+  if (req.url && !req.url.startsWith('/api')) {
+    req.url = '/api' + req.url;
+  }
+
   return app(req, res);
 };
+
 
