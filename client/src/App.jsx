@@ -17,6 +17,7 @@ import Notifications from './pages/Notifications';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import InterviewRoom from './pages/InterviewRoom';
+import CandidateBooking from './pages/CandidateBooking';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -72,6 +73,8 @@ export const App = () => {
                 </PublicRoute>
               }
             />
+            {/* Public Candidate Self-Scheduling */}
+            <Route path="/book/:id" element={<CandidateBooking />} />
 
             {/* Protected SaaS App Routes */}
             <Route

@@ -6,11 +6,17 @@ const {
   createCandidate,
   updateCandidate,
   deleteCandidate,
+  getPublicCandidateProfileAndSlots,
+  selfBookCandidate,
 } = require('../controllers/candidateController');
 const { protect, authorize } = require('../middleware/auth');
 const validate = require('../middleware/validate');
 
 const router = express.Router();
+
+// Public Candidate Self-Scheduling endpoints
+router.get('/:id/public-slots', getPublicCandidateProfileAndSlots);
+router.post('/:id/self-book', selfBookCandidate);
 
 router.use(protect);
 
