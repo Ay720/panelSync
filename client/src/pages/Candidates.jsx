@@ -13,6 +13,8 @@ import {
   Clock,
   ExternalLink,
   Tag,
+  Link2,
+  Copy,
 } from 'lucide-react';
 import Card, { CardHeader, CardContent } from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -157,6 +159,17 @@ export const Candidates = () => {
   const handleViewProfile = (candidate) => {
     setSelectedCandidate(candidate);
     setIsViewModalOpen(true);
+  };
+
+  const handleCopyBookingLink = (candidateId, e) => {
+    if (e) e.stopPropagation();
+    const link = `${window.location.origin}/book/${candidateId}`;
+    navigator.clipboard.writeText(link);
+    addToast({
+      type: 'success',
+      title: 'Booking Link Copied!',
+      message: 'Candidate self-scheduling link copied to clipboard.',
+    });
   };
 
   return (

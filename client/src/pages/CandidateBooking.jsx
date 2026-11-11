@@ -241,3 +241,4 @@ export const CandidateBooking = () => {
 };
 
 export default CandidateBooking;
+
