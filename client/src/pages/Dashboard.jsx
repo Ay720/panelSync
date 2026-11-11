@@ -233,17 +233,15 @@ export const Dashboard = () => {
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
-                        {item.meetingLink && (
-                          <a
-                            href={item.meetingLink}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold text-xs border border-purple-200 transition-colors"
-                          >
-                            <Video className="w-3.5 h-3.5" />
-                            Join Room
-                          </a>
-                        )}
+                        <Button
+                          variant="soft"
+                          size="sm"
+                          icon={Video}
+                          onClick={() => navigate(`/room/${item._id}`)}
+                          className="font-bold"
+                        >
+                          Join Room
+                        </Button>
 
                         <Button
                           variant="outline"

@@ -153,3 +153,43 @@ exports.getDetailedAnalytics = async (req, res, next) => {
   }
 };
 
+// @desc    Export interview data as CSV report
+// @route   GET /api/analytics/export-csv
+// @access  Private
+exports.exportCSV = async (req, res, next) => {
+  try {
+    const interviews = await Interview.find()
+      .populate('candidate', 'name email jobRole')
+      .populate('interviewers.interviewer', 'name email department')
+      .sort({ scheduledStartTime: -1 });
+
+    const csvRows = [
+      ['Interview ID', 'Title', 'Candidate Name', 'Candidate Email', 'Job Role', 'Round Type', 'Status', 'Start Time UTC', 'Duration (Mins)', 'Interviewers', 'Notes'],
+    ];
+
+    interviews.forEach((i) => {
+      const invNames = i.interviewers?.map((p) => p.interviewer?.name || 'Panelist').join('; ');
+      csvRows.push([
+        `"${i._id}"`,
+        `"${(i.title || '').replace(/"/g, '""')}"`,
+        `"${(i.candidate?.name || '').replace(/"/g, '""')}"`,
+        `"${(i.candidate?.email || '').replace(/"/g, '""')}"`,
+        `"${(i.jobRole || '').replace(/"/g, '""')}"`,
+        `"${i.roundType || ''}"`,
+        `"${i.status || ''}"`,
+        `"${new Date(i.scheduledStartTime).toISOString()}"`,
+        i.durationMinutes || 60,
+        `"${invNames.replace(/"/g, '""')}"`,
+        `"${(i.feedbackNotes || '').replace(/"/g, '""')}"`,
+      ]);
+    });
+
+    const csvContent = csvRows.map((r) => r.join(',')).join('\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="panelsync-analytics-report.csv"');
+    res.send(csvContent);
+  } catch (err) {
+    next(err);
+  }
+};
+

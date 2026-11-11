@@ -8,6 +8,7 @@ import {
   Calendar,
   Layers,
   ArrowUpRight,
+  Download,
 } from 'lucide-react';
 import Card, { CardHeader, CardContent } from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
@@ -39,13 +40,25 @@ export const Analytics = () => {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-          Scheduling Intelligence & Analytics
-        </h2>
-        <p className="text-slate-500 text-xs md:text-sm">
-          Metrics on interviewer load balancing, round distribution, and schedule efficiency.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+            Scheduling Intelligence & Analytics
+          </h2>
+          <p className="text-slate-500 text-xs md:text-sm">
+            Metrics on interviewer load balancing, round distribution, and schedule efficiency.
+          </p>
+        </div>
+
+        <a
+          href="/api/analytics/export-csv"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold shadow-xs transition-colors shrink-0"
+        >
+          <Download className="w-3.5 h-3.5 text-brand-600" />
+          Export CSV Report
+        </a>
       </div>
 
       {loading ? (

@@ -16,6 +16,7 @@ import Panels from './pages/Panels';
 import Notifications from './pages/Notifications';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import InterviewRoom from './pages/InterviewRoom';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -90,6 +91,7 @@ export const App = () => {
               <Route path="notifications" element={<Notifications />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="room/:id" element={<InterviewRoom />} />
             </Route>
 
             {/* Catch-all redirect */}

@@ -11,6 +11,7 @@ import {
   XCircle,
   AlertTriangle,
   ExternalLink,
+  Download,
 } from 'lucide-react';
 import CalendarView from '../components/calendar/CalendarView';
 import RescheduleModal from '../components/scheduler/RescheduleModal';
@@ -203,6 +204,14 @@ export const CalendarPage = () => {
                 )}
               </div>
               <div className="flex items-center gap-2">
+                <a
+                  href={`/api/interviews/${inspectedInterview._id}/ics`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 bg-white font-medium"
+                >
+                  <Download className="w-3.5 h-3.5" /> .ics
+                </a>
                 <Button variant="outline" size="sm" onClick={() => setIsDetailModalOpen(false)}>
                   Close
                 </Button>
@@ -294,14 +303,17 @@ export const CalendarPage = () => {
                     {inspectedInterview.meetingLink}
                   </span>
                 </div>
-                <a
-                  href={inspectedInterview.meetingLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-2.5 py-1 bg-brand-600 text-white rounded-md font-bold text-xs hover:bg-brand-700 flex items-center gap-1"
+                <Button
+                  size="sm"
+                  variant="primary"
+                  icon={Video}
+                  onClick={() => {
+                    setIsDetailModalOpen(false);
+                    navigate(`/room/${inspectedInterview._id}`);
+                  }}
                 >
-                  Join <ExternalLink className="w-3 h-3" />
-                </a>
+                  Enter Room
+                </Button>
               </div>
             )}
           </div>
